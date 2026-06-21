@@ -1,6 +1,7 @@
 import express from "express";
 import User from "../models/User.js";
 import { verifyToken, verifyAdmin } from "../middleware/verifyToken.js";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -61,6 +62,47 @@ router.get("/admin/stats", verifyToken, verifyAdmin, async (req, res) => {
         ]);
 
         res.json({ totalUsers, totalBooks, totalDeliveries, totalRevenue, booksByCategory });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+// Update role for Better Auth users (no JWT needed)
+router.patch("/update-role", async (req, res) => {
+    try {
+        const { email, role } = req.body;
+        const user = await User.findOneAndUpdate(
+            { email },
+            { role },
+            { new: true }
+        ).select("-password");
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.json({ message: "Role updated", user });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Google user এর জন্য JWT token বানাও
+router.post("/google-token", async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const token = jwt.sign(
+            { id: user._id, email: user.email, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.json({ message: "Token created", user });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

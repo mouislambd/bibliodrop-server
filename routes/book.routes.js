@@ -1,7 +1,6 @@
 import express from "express";
 import Book from "../models/Book.js";
 import { verifyToken, verifyAdmin, verifyLibrarian } from "../middleware/verifyToken.js";
-
 const router = express.Router();
 
 // GET all published books (public) with search, filter, pagination
@@ -40,6 +39,38 @@ router.get("/featured", async (req, res) => {
             .populate("librarian", "name photo")
             .sort({ createdAt: -1 })
             .limit(6);
+        res.json({ books });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// GET librarian's own books
+router.get("/librarian/my-books", verifyToken, verifyLibrarian, async (req, res) => {
+    try {
+        const books = await Book.find({ librarian: req.user.id }).sort({ createdAt: -1 });
+        res.json({ books });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// GET all pending approval books (admin)
+router.get("/admin/all-pending", verifyToken, verifyAdmin, async (req, res) => {
+    try {
+        const books = await Book.find({ status: "pending_approval" })
+            .populate("librarian", "name email")
+            .sort({ createdAt: -1 });
+        res.json({ books });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// GET all books (admin)
+router.get("/admin/all-books", verifyToken, verifyAdmin, async (req, res) => {
+    try {
+        const books = await Book.find().populate("librarian", "name email").sort({ createdAt: -1 });
         res.json({ books });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -131,16 +162,6 @@ router.patch("/:id/approve", verifyToken, verifyAdmin, async (req, res) => {
         );
         if (!book) return res.status(404).json({ message: "Book not found" });
         res.json({ message: "Book approved and published", book });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// GET librarian's own books
-router.get("/librarian/my-books", verifyToken, verifyLibrarian, async (req, res) => {
-    try {
-        const books = await Book.find({ librarian: req.user.id }).sort({ createdAt: -1 });
-        res.json({ books });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
