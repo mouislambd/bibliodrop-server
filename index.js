@@ -20,7 +20,11 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 app.use(cors({
-    origin: [process.env.CLIENT_URL, "https://bibliodrop-client-sand.vercel.app"],
+    origin: [
+        process.env.CLIENT_URL,
+        "https://bibliodrop-client-sand.vercel.app",
+        "https://bibliodrop-client-git-main-tanhaislammou097-2792s-projects.vercel.app"
+    ],
     credentials: true,
 }));
 
