@@ -69,6 +69,7 @@ router.put("/:id", verifyToken, async (req, res) => {
     }
 });
 
+
 // DELETE review
 router.delete("/:id", verifyToken, async (req, res) => {
     try {
@@ -93,6 +94,7 @@ router.get("/user/my-reviews", verifyToken, async (req, res) => {
         res.json({ reviews });
     } catch (error) {
         res.status(500).json({ message: error.message });
+
     }
 });
 
