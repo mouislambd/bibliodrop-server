@@ -19,14 +19,15 @@ const verifyToken = async (req, res, next) => {
 };
 
 const verifyAdmin = (req, res, next) => {
-    if (req.user?.role !== "admin") {
+    if (req.user?.role?.toLowerCase() !== "admin") {
         return res.status(403).json({ message: "Forbidden - Admin only" });
     }
     next();
 };
 
 const verifyLibrarian = (req, res, next) => {
-    if (req.user?.role !== "librarian" && req.user?.role !== "admin") {
+    const role = req.user?.role?.toLowerCase();
+    if (role !== "librarian" && role !== "admin") {
         return res.status(403).json({ message: "Forbidden - Librarian only" });
     }
     next();
