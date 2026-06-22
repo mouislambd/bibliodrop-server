@@ -70,10 +70,15 @@ router.get("/admin/stats", verifyToken, verifyAdmin, async (req, res) => {
 router.patch("/update-role", async (req, res) => {
     try {
         const { email, role } = req.body;
+
+        // Admin protection
+        const finalRole = (role === "admin" && email !== "admin@gmail.com") ? "user" : role;
+
         const user = await User.findOneAndUpdate(
             { email },
-            { role },
+            { role: finalRole },  // role এর জায়গায় finalRole
             { new: true }
+        
         ).select("-password");
         if (!user) return res.status(404).json({ message: "User not found" });
         res.json({ message: "Role updated", user });
