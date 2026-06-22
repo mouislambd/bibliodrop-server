@@ -12,7 +12,14 @@ export const auth = betterAuth({
     database: mongodbAdapter(db),
     secret: process.env.BETTER_AUTH_SECRET,
     baseURL: process.env.BETTER_AUTH_URL,
-    trustedOrigins: [process.env.CLIENT_URL],
+    trustedOrigins: [
+        process.env.CLIENT_URL,
+        "https://bibliodrop-client-sand.vercel.app",
+        "https://bibliodrop-client-git-main-tanhaislammou097-2792s-projects.vercel.app"
+    ],
+    emailAndPassword: {
+        enabled: true,
+    },
     socialProviders: {
         google: {
             clientId: process.env.GOOGLE_CLIENT_ID,
