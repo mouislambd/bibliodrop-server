@@ -1,6 +1,24 @@
 import jwt from "jsonwebtoken";
+import { auth } from "../config/auth.js";
+import { fromNodeHeaders } from "better-auth/node";
 
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
+    // First try Better Auth session
+    try {
+        const session = await auth.api.getSession({
+            headers: fromNodeHeaders(req.headers),
+        });
+        if (session?.user) {
+            req.user = {
+                id: session.user.id,
+                email: session.user.email,
+                role: session.user.role || "user",
+            };
+            return next();
+        }
+    } catch (e) { }
+
+    // Fallback: JWT cookie
     const token = req.cookies?.token;
     if (!token) {
         return res.status(401).json({ message: "Unauthorized - No token" });
