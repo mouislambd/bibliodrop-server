@@ -70,18 +70,21 @@ router.get("/admin/stats", verifyToken, verifyAdmin, async (req, res) => {
 router.patch("/update-role", async (req, res) => {
     try {
         const { email, role } = req.body;
-
-        // Admin protection
         const finalRole = (role === "admin" && email !== "admin@gmail.com") ? "user" : role;
 
-        const user = await User.findOneAndUpdate(
+        // Better Auth এর user collection directly update
+        const { MongoClient } = await import("mongodb");
+        const client = new MongoClient(process.env.MONGODB_URI);
+        await client.connect();
+        const db = client.db();
+
+        await db.collection("user").updateOne(
             { email },
-            { role: finalRole },  // role এর জায়গায় finalRole
-            { new: true }
-        
-        ).select("-password");
-        if (!user) return res.status(404).json({ message: "User not found" });
-        res.json({ message: "Role updated", user });
+            { $set: { role: finalRole } }
+        );
+        await client.close();
+
+        res.json({ message: "Role updated", role: finalRole });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
