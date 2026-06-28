@@ -14,6 +14,7 @@ export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL,
     trustedOrigins: [
         process.env.CLIENT_URL,
+        "http://localhost:3000",
         "https://bibliodrop-client-sand.vercel.app",
         "https://bibliodrop-client-git-main-tanhaislammou097-2792s-projects.vercel.app"
     ],
