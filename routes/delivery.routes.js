@@ -1,7 +1,7 @@
 import express from "express";
 import Delivery from "../models/Delivery.js";
 import Book from "../models/Book.js";
-import { verifyToken, verifyLibrarian } from "../middleware/verifyToken.js";
+import { verifyToken, verifyLibrarian, verifyAdmin } from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
@@ -133,6 +133,19 @@ router.patch("/:id/status", verifyToken, verifyLibrarian, async (req, res) => {
         );
         if (!delivery) return res.status(404).json({ message: "Delivery not found" });
         res.json({ message: "Status updated", delivery });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+// GET all deliveries / transactions (admin only)
+router.get("/all", verifyToken, verifyAdmin, async (req, res) => {
+    try {
+        const deliveries = await Delivery.find()
+            .populate("book", "title")
+            .populate("user", "name email")
+            .populate("librarian", "name email")
+            .sort({ createdAt: -1 });
+        res.json({ deliveries });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
