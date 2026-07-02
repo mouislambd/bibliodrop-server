@@ -17,7 +17,7 @@ router.post("/create-checkout-session", verifyToken, async (req, res) => {
         const { bookId } = req.body;
         const book = await Book.findById(bookId);
         if (!book) return res.status(404).json({ message: "Book not found" });
-        if (book.isCheckedOut) return res.status(400).json({ message: "Book is already checked out" });
+        // if (book.isCheckedOut) return res.status(400).json({ message: "Book is already checked out" });
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
