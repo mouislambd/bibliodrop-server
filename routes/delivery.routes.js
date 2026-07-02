@@ -96,9 +96,8 @@ router.get("/librarian-deliveries", verifyToken, verifyLibrarian, async (req, re
     try {
         const deliveries = await Delivery.find({ librarian: req.user.id })
             .populate("book", "title coverImage")
-            .populate("user", "name email")
             .sort({ createdAt: -1 });
-        res.json({ deliveries });
+            res.json({ deliveries });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
