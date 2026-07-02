@@ -150,5 +150,18 @@ router.get("/all", verifyToken, verifyAdmin, async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+// GET check if user can review
+router.get("/can-review/:bookId", verifyToken, async (req, res) => {
+    try {
+        const delivery = await Delivery.findOne({
+            book: req.params.bookId,
+            user: req.user.id,
+            status: "delivered",
+        });
+        res.json({ canReview: !!delivery });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 export default router;
