@@ -9,7 +9,7 @@ const bookSchema = new mongoose.Schema({
     coverImage: { type: String, required: true },
     status: { type: String, enum: ["pending_approval", "published", "unpublished"], default: "pending_approval" },
     isCheckedOut: { type: Boolean, default: false },
-    librarian: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    librarian: { type: String, required: true },
 }, { timestamps: true });
 
 export default mongoose.model("Book", bookSchema);

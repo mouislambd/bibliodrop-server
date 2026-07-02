@@ -64,7 +64,7 @@ router.post("/confirm", verifyToken, async (req, res) => {
         const delivery = await Delivery.create({
             book: bookId,
             user: req.user.id,
-            librarian: book.librarian,
+            librarian: book.librarian.toString(),
             deliveryFee: book.deliveryFee,
             status: "pending",
             transactionId: session.payment_intent,
