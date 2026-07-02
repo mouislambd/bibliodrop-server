@@ -92,7 +92,7 @@ router.get("/my-deliveries", verifyToken, async (req, res) => {
 });
 
 // GET librarian's deliveries
-router.get("/librarian-deliveries", verifyToken, verifyLibrarian, async (req, res) => {
+router.get("/librarian-deliveries", verifyToken, async (req, res) => {
     try {
         const deliveries = await Delivery.find({ librarian: req.user.id })
             .populate("book", "title coverImage")
