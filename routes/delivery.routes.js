@@ -104,7 +104,7 @@ router.get("/librarian-deliveries", verifyToken, verifyLibrarian, async (req, re
 });
 
 // GET all deliveries (admin)
-router.get("/all", verifyToken, async (req, res) => {
+router.get("/librarian-deliveries", verifyToken, async (req, res) => {
     try {
         const deliveries = await Delivery.find()
             .populate("book", "title")
